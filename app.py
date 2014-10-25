@@ -10,7 +10,6 @@ app.PROPAGATE_EXCEPTIONS = True
 def incoming_sms():
     """Respond to incoming calls with a simple text message."""
     
-    print response.body
     if 'stop_id' not in session:
         # if it's the first text...
 
