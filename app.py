@@ -3,7 +3,7 @@ import twilio.twiml
  
 app = Flask(__name__)
 app.SECRET_KEY = 'notsecret'  # TODO: put securely on Heroku
-app.DEBUG = True
+app.debug = True
 app.PROPAGATE_EXCEPTIONS = True
  
 @app.route("/twilio_sms", methods=['GET', 'POST'])
