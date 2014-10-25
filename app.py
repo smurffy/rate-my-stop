@@ -2,7 +2,7 @@ from flask import Flask, request, redirect, session
 import twilio.twiml
  
 app = Flask(__name__)
-app.SECRET_KEY = 'notsecret'  # TODO: put securely on Heroku
+app.secret_key = 'notsecret'  # TODO: put securely on Heroku
 app.debug = True
 app.PROPAGATE_EXCEPTIONS = True
  
