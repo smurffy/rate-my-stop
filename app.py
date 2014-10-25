@@ -4,11 +4,13 @@ import twilio.twiml
 app = Flask(__name__)
 app.SECRET_KEY = 'notsecret'  # TODO: put securely on Heroku
 app.DEBUG = True
+app.PROPAGATE_EXCEPTIONS = True
  
 @app.route("/twilio_sms", methods=['GET', 'POST'])
 def incoming_sms():
     """Respond to incoming calls with a simple text message."""
     
+    print "HELLO"
     if 'stop_id' not in session:
         # if it's the first text...
 
