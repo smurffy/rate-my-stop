@@ -2,7 +2,7 @@ from flask import Flask, request, redirect, session
 from flask.ext.sqlalchemy import SQLAlchemy
 import os
 import datetime
-from pytz import timezone
+from pytz import timezone, utc
 import twilio.twiml
 import json
  
@@ -65,13 +65,10 @@ def incoming_sms():
 
 # From http://stackoverflow.com/questions/6999726/python-converting-datetime-to-millis-since-epoch-unix-time
 def unix_time(dt):
-    epoch = datetime.datetime.utcfromtimestamp(0)
-    print dt, epoch
+    epoch = datetime.datetime(1970, 1, 1, tzinfo=utc)
     delta = dt - epoch
     return delta.total_seconds()
 
-def unix_time_millis(dt):
-    return unix_time(dt) * 1000.0
 
 @app.route('/')
 def query_all_data():
