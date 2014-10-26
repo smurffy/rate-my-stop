@@ -19,7 +19,7 @@ class Feedback(db.Model):
     stop_id = db.Column(db.String(10), db.ForeignKey('stop.stop_id'))
     comment = db.Column(db.Text)
     created_at = db.Column(db.DateTime(timezone = True))
-
+    sentiment = db.Column(db.Text)
     stop = db.relationship('Stop')
 
 class Stop(db.Model):
@@ -29,6 +29,20 @@ class Stop(db.Model):
     longitude = db.Column(db.Float)
 
 db.create_all()
+
+def sentiment_analysis(feedback):
+    condition = "text"+"="+feedback
+    url = 'http://text-processing.com/api/sentiment/'
+    r = requests.post(url, data=condition)
+    #print sentiment_response.json()
+    json_response = r.json()
+
+    def sentiment_value(sentiment_response):
+        feedback_sentiment = json_response['label']
+        #print feedback_sentiment
+        return feedback_sentiment
+
+    sentiment_value(json_response)
 
 @app.route("/twilio_sms", methods=['GET', 'POST'])
 def incoming_sms():
@@ -49,8 +63,9 @@ def incoming_sms():
         feedback = request.values.get('Body')
 
         # TODO: do sentiment analysis
+        sentiment = sentiment_analysis(feedback)
 
-        save_data(session['stop_id'], feedback)
+        save_data(session['stop_id'], feedback, sentiment)
 
         del session['stop_id']
         db.session.commit()
@@ -91,11 +106,12 @@ def query_all_data():
 
     return Response(json.dumps(result), mimetype='application/json')
 
-def save_data(stop_id, comment):
+def save_data(stop_id, comment, sentiment):
     pacific = timezone('US/Pacific')
 
     feedback = Feedback(stop_id=stop_id,
                         comment=comment,
+                        sentiment =sentiment,
                         created_at=datetime.datetime.now(pacific))
     db.session.add(feedback)
 
