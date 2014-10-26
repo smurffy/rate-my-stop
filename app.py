@@ -49,6 +49,7 @@ def incoming_sms():
 
         save_data(session['stop_id'], feedback)
         db.session.commit()
+        print "saved"
 
         del session['stop_id']
         resp = twilio.twiml.Response()
