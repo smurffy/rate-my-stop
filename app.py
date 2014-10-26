@@ -51,6 +51,7 @@ def incoming_sms():
 
         del session['stop_id']
         db.session.commit()
+        # TODO: check that this doesn't leave you in a loop if you pass an invalid stop id
 
         resp = twilio.twiml.Response()
         resp.message("Thanks for your feedback!")
