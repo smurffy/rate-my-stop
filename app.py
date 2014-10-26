@@ -24,7 +24,7 @@ class Feedback(db.Model):
 
 class Stop(db.Model):
     stop_id = db.Column(db.String(10), primary_key=True)
-    name = db.Column(db.String(40))
+    name = db.Column(db.String(80))
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)
 
