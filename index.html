@@ -11,12 +11,12 @@
 <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.Default.css' rel='stylesheet' />
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.min.js"></script>
-
 <link rel='stylesheet' href='css/main.css'>
 </head>
 <body>
 <div id='map'></div>
 <div id='info' class='info'></div>
+
 <script>
 			L.mapbox.accessToken = 'pk.eyJ1IjoicmJob3NsZSIsImEiOiJYYVhjOE9NIn0.RqUSYxLLakn-Wd7a_LjEMA';
 			var info = document.getElementById('info');
@@ -24,157 +24,58 @@
 												.setView([37.33, -121.9], 12);
 
 			var myLayer = L.mapbox.featureLayer().addTo(map);
-			var json = [{
-    "stop_id": '5',
-    "lat": 37.328690,
-    "long": -121.910797,
-    "feedback": [
-        {
-            "datetime": 1414275828,
-            "comment": "This bus is awesome"
-        },
-        {
-            "datetime": 1414675828,
-            "comment": "This bus sucks!!"
-        }
-    ]
-},
-{
+			var json = [];
 
-    "stop_id": '6',
-    "lat": 37.328690,
-    "long": -121.910797,
-    "feedback": [
-        {
-            "datetime": 1414275828,
-            "comment": "This bus is awesome"
-        },
-        {
-            "datetime": 1414675828,
-            "comment": "This bus sucks!!"
-        }
-    ]
-},
-{
 
-    "stop_id": '7',
-    "lat": 37.267295633231903,
-    "long": -121.859381403880747,
-    "feedback": [
-        {
-            "datetime": 1414275828,
-            "comment": "This bus is awesome"
-        },
-        {
-            "datetime": 1414675828,
-            "comment": "This bus sucks!!"
-        }
-    ]
-},
-{
 
-    "stop_id": '8',
-    "lat": 37.403509624887675,
-    "long": -121.987407409696303,
-    "feedback": [
-        {
-            "datetime": 1414275828,
-            "comment": "This bus is awesome"
-        },
-        {
-            "datetime": 1414675828,
-            "comment": "This bus sucks!!"
-        }
-    ]
-},
-{
+ $.getJSON("http://rate-my-stop.herokuapp.com/", function(data) {
+	debugger;
+    json = data;
+})
+.done(function(data) {
+				json = data;
 
-    "stop_id": '9',
-    "lat": 37.403572230915799,
-    "long": -121.989663361510125,
-    "feedback": [
-        {
-            "datetime": 1414275828,
-            "comment": "This bus is awesome"
-        },
-        {
-            "datetime": 1414675828,
-            "comment": "This bus sucks!!"
-        }
-    ]
-},
-{
-    "stop_id": '10',
-    "lat": 37.403354290821213,
-    "long": -121.99825432283285,
-    "feedback": [
-        {
-            "datetime": 1414275828,
-            "comment": "This bus is awesome"
-        },
-        {
-            "datetime": 1414675828,
-            "comment": "This bus sucks!!"
-        }
-    ]
-},
-{
-    "stop_id": '11',
-    "lat": 37.403396304660852,
-    "long": -122.000874432493234,
-    "feedback": [
-        {
-            "datetime": 1414275828,
-            "comment": "This bus is awesome"
-        },
-        {
-            "datetime": 1414675828,
-            "comment": "This bus sucks!!"
-        }
-    ]
-},
-{
-    "stop_id": '12',
-    "lat": 37.402578103559662,
-    "long": -122.008638008854405,
-    "feedback": [
-        {
-            "datetime": 1414275828,
-            "comment": "This bus is awesome"
-        },
-        {
-            "datetime": 1414675828,
-            "comment": "This bus sucks!!"
-        }
-    ]
-},
-{
-    "stop_id": '13',
-    "lat": 37.402776960059313,
-    "long": -122.00955065425309,
+				var markers = new L.MarkerClusterGroup();
 
-    "feedback": [
-        {
-            "datetime": 1414275828,
-            "comment": "This bus is awesome"
-        },
-        {
-            "datetime": 1414675828,
-            "comment": "This bus sucks!!"
-        }
-    ]
-}
+						for (var i = 0; i < json.length; i++) {
+							debugger;
+								var a = json[i];
+								var title = a.stop_id;
+								var marker = L.marker(new L.LatLng(a.lat, a.long), {
+										icon: L.mapbox.marker.icon({'marker-symbol': 'bus', 'marker-size':'large', 'marker-color': '0044FF'}),
+										title: title,
+										clickable: true
+								});
+								marker.bindPopup(title);
 
-];
+								marker.on('click',function(e) {
+								// Force the popup closed.
+									this.closePopup();
 
+									//var feature = e.feature;
+
+									var content = '<div><strong>' + this.options.title + '</strong></div>';
+
+							info.innerHTML = content;
+
+				});
+				debugger;
+				markers.addLayer(marker);
+				}
+
+				map.addLayer(markers);
+
+				});
 
 // Converting JSON to GeoJSON
 
 var geoJson = [];
 
 function jsonToGeojson(json){
+
 			var jsonLength = json.length;
 			for (var i=0; i< jsonLength; i++){
+
 				var geoJsonObject = {type : 'Feature',
 																							 geometry: {
 																								 type: 'Point',
@@ -186,44 +87,18 @@ function jsonToGeojson(json){
 
 																								}
 																								};
+
 				geoJson.push(geoJsonObject);
 			}
 
 }
 
-jsonToGeojson(json);
+//jsonToGeojson(json);
 
 
 
 
-
-var markers = new L.MarkerClusterGroup();
-
-    for (var i = 0; i < json.length; i++) {
-        var a = json[i];
-        var title = a.stop_id;
-        var marker = L.marker(new L.LatLng(a.lat, a.long), {
-            icon: L.mapbox.marker.icon({'marker-symbol': 'bus', 'marker-size':'large', 'marker-color': '0044FF'}),
-            title: title,
-						clickable: true
-        });
-        marker.bindPopup(title);
-
-				marker.on('click',function(e) {
-				// Force the popup closed.
-					this.closePopup();
-
-					//var feature = e.feature;
-
-					var content = '<div><strong>' + this.options.title + '</strong></div>';
-
-			info.innerHTML = content;
-
-});
-markers.addLayer(marker);
-}
-
-    map.addLayer(markers);
+debugger;
 
 
 //Add geojson to feature layer
