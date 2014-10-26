@@ -1,9 +1,10 @@
-from flask import Flask, request, redirect, session
+from flask import Flask, request, redirect, session, Response
 from flask.ext.sqlalchemy import SQLAlchemy
 import os
 import datetime
-from pytz import timezone
+from pytz import timezone, utc
 import twilio.twiml
+import json
  
 import config
 
@@ -19,9 +20,11 @@ class Feedback(db.Model):
     comment = db.Column(db.Text)
     created_at = db.Column(db.DateTime(timezone = True))
 
+    stop = db.relationship('Stop')
+
 class Stop(db.Model):
     stop_id = db.Column(db.String(10), primary_key=True)
-    name = db.Column(db.String(40))
+    name = db.Column(db.String(80))
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)
 
@@ -57,6 +60,36 @@ def incoming_sms():
         resp.message("Thanks for your feedback!")
         return str(resp)
  
+# how do i...
+# fetch all feedback, map them into json, group by stop_id...?
+
+# From http://stackoverflow.com/questions/6999726/python-converting-datetime-to-millis-since-epoch-unix-time
+def unix_time(dt):
+    epoch = datetime.datetime(1970, 1, 1, tzinfo=utc)
+    delta = dt - epoch
+    return delta.total_seconds()
+
+
+@app.route('/')
+def query_all_data():
+    all_feedbacks = Feedback.query.all()
+
+    stops = set([feedback.stop for feedback in all_feedbacks])
+
+    result = [{
+        'stop_id': stop.stop_id,
+        'lat': stop.latitude,
+        'long': stop.longitude,
+        'feedback': [{
+            'datetime': int(unix_time(feedback.created_at)),
+            'comment': feedback.comment,
+            'sentiment': 'pro' # replace me with working code
+        } for feedback in all_feedbacks if feedback.stop_id == stop.stop_id]
+    } for stop in stops]
+
+    
+
+    return Response(json.dumps(result), mimetype='application/json')
 
 def save_data(stop_id, comment):
     pacific = timezone('US/Pacific')
