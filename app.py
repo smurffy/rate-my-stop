@@ -4,7 +4,6 @@ import twilio.twiml
 app = Flask(__name__)
 app.secret_key = 'notsecret'  # TODO: put securely on Heroku
 app.debug = True
-app.PROPAGATE_EXCEPTIONS = True
  
 @app.route("/twilio_sms", methods=['GET', 'POST'])
 def incoming_sms():
@@ -24,7 +23,11 @@ def incoming_sms():
 
         feedback = request.values.get('Body')
 
+        # TODO: do sentiment analysis
+
         # TODO: save data here
+
+        del session['stop_id']
         resp = twilio.twiml.Response()
         resp.message("Thanks for your feedback!")
         return str(resp)
