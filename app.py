@@ -48,10 +48,10 @@ def incoming_sms():
         # TODO: do sentiment analysis
 
         save_data(session['stop_id'], feedback)
-        db.session.commit()
-        print "saved"
 
         del session['stop_id']
+        db.session.commit()
+
         resp = twilio.twiml.Response()
         resp.message("Thanks for your feedback!")
         return str(resp)
