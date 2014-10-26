@@ -66,6 +66,7 @@ def incoming_sms():
 # From http://stackoverflow.com/questions/6999726/python-converting-datetime-to-millis-since-epoch-unix-time
 def unix_time(dt):
     epoch = datetime.datetime.utcfromtimestamp(0)
+    print dt, epoch
     delta = dt - epoch
     return delta.total_seconds()
 
