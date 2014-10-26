@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, session
+from flask import Flask, request, redirect, session, Response
 from flask.ext.sqlalchemy import SQLAlchemy
 import os
 import datetime
@@ -89,7 +89,7 @@ def query_all_data():
 
     
 
-    return json.dumps(result)
+    return Response(json.dumps(result), mimetype='application/json')
 
 def save_data(stop_id, comment):
     pacific = timezone('US/Pacific')
