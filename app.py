@@ -1,9 +1,12 @@
 from flask import Flask, request, redirect, session
+import os
+import config
 import twilio.twiml
  
 app = Flask(__name__)
-app.secret_key = 'notsecret'  # TODO: put securely on Heroku
-app.debug = True
+
+app_config = os.environ.get('APP_SETTINGS', 'config.DevelopmentConfig')
+app.config.from_object(app_config)
  
 @app.route("/twilio_sms", methods=['GET', 'POST'])
 def incoming_sms():
